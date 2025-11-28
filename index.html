@@ -325,7 +325,7 @@
 
     <header>
         <div class="logo">TaskFlow Proyeto Test Java by: Cristian Garcia</div>
-        <a href="../index.html" class="home-btn">← Volver al Home</a>
+        <a href="index.html" class="home-btn">← Volver al Home</a>
     </header>
 
     <div class="dashboard">
@@ -408,11 +408,8 @@
         </div>
     </div>
 
+    <script src="src/main/resources/static/dataService.js"></script>
     <script>
-        const API_BASE = ''; // Relative path
-
-        // --- Logic ---
-
         document.addEventListener('DOMContentLoaded', () => {
             loadUsers();
             loadTasks();
@@ -423,7 +420,12 @@
 
         document.getElementById('userForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            await handleFormSubmit(e, '/users', 'POST', () => {
+            const formData = new FormData(e.target);
+            const user = Object.fromEntries(formData.entries());
+
+            await handleOperation(async () => {
+                await DataService.createUser(user);
+                e.target.reset();
                 loadUsers();
                 loadUserOptions();
             });
@@ -437,9 +439,12 @@
                 completed: false,
                 user: { id: parseInt(document.getElementById('userSelect').value) }
             };
-            await postData('/tasks', task);
-            e.target.reset();
-            loadTasks();
+
+            await handleOperation(async () => {
+                await DataService.createTask(task);
+                e.target.reset();
+                loadTasks();
+            });
         });
 
         // --- Edit Actions (Submit) ---
@@ -451,10 +456,13 @@
                 username: document.getElementById('editUsername').value,
                 email: document.getElementById('editEmail').value
             };
-            await putData(`/users/${id}`, user);
-            closeModal('editUserModal');
-            loadUsers();
-            loadUserOptions();
+
+            await handleOperation(async () => {
+                await DataService.updateUser(id, user);
+                closeModal('editUserModal');
+                loadUsers();
+                loadUserOptions();
+            });
         });
 
         document.getElementById('editTaskForm').addEventListener('submit', async (e) => {
@@ -466,9 +474,12 @@
                 completed: document.getElementById('editTaskCompleted').checked,
                 user: { id: parseInt(document.getElementById('editTaskUser').value) }
             };
-            await putData(`/tasks/${id}`, task);
-            closeModal('editTaskModal');
-            loadTasks();
+
+            await handleOperation(async () => {
+                await DataService.updateTask(id, task);
+                closeModal('editTaskModal');
+                loadTasks();
+            });
         });
 
         // --- Loaders ---
@@ -476,7 +487,7 @@
         async function loadUsers() {
             const list = document.getElementById('userList');
             try {
-                const data = await fetchData('/users');
+                const data = await DataService.getUsers();
                 if (data.length === 0) {
                     list.innerHTML = '<div class="empty-state">No hay usuarios registrados</div>';
                     return;
@@ -488,7 +499,8 @@
                         <p>${user.email}</p>
                     </div>
                     <div class="actions">
-                        <button class="btn-icon" onclick="openEditUser(${user.id}, '${user.username}', '${user.email}')" title="Editar">✎</button>
+                        <button class="btn-icon" onclick="openEditUser(${user.id}, '${user.username}', '${user.email}')"
+                            title="Editar">✎</button>
                         <button class="btn-icon delete" onclick="deleteUser(${user.id})" title="Eliminar">🗑</button>
                     </div>
                 </div>
@@ -501,7 +513,7 @@
         async function loadTasks() {
             const list = document.getElementById('taskList');
             try {
-                const data = await fetchData('/tasks');
+                const data = await DataService.getTasks();
                 if (data.length === 0) {
                     list.innerHTML = '<div class="empty-state">No hay tareas pendientes</div>';
                     return;
@@ -520,8 +532,10 @@
                             ${task.completed ? 'Completada' : 'Pendiente'}
                         </div>
                         <div class="actions">
-                            <button class="btn-icon" onclick='openEditTask(${JSON.stringify(task)})' title="Editar">✎</button>
-                            <button class="btn-icon delete" onclick="deleteTask(${task.id})" title="Eliminar">🗑</button>
+                            <button class="btn-icon" onclick='openEditTask(${JSON.stringify(task)})'
+                                title="Editar">✎</button>
+                            <button class="btn-icon delete" onclick="deleteTask(${task.id})"
+                                title="Eliminar">🗑</button>
                         </div>
                     </div>
                 </div>
@@ -534,7 +548,7 @@
         async function loadUserOptions() {
             const selects = [document.getElementById('userSelect'), document.getElementById('editTaskUser')];
             try {
-                const data = await fetchData('/users');
+                const data = await DataService.getUsers();
                 selects.forEach(select => {
                     const currentVal = select.value;
                     select.innerHTML = '<option value="">Asignar a usuario...</option>';
@@ -551,55 +565,13 @@
 
         // --- Helpers ---
 
-        async function handleFormSubmit(e, url, method, onSuccess) {
-            const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.textContent;
-            btn.textContent = 'Guardando...';
-            btn.disabled = true;
-
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-
+        async function handleOperation(operation) {
             try {
-                await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                e.target.reset();
-                if (onSuccess) onSuccess();
+                await operation();
             } catch (err) {
+                console.error(err);
                 alert('Error en la operación');
-            } finally {
-                btn.textContent = originalText;
-                btn.disabled = false;
             }
-        }
-
-        async function fetchData(url) {
-            const res = await fetch(url);
-            return await res.json();
-        }
-
-        async function postData(url, data) {
-            await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-        }
-
-        async function putData(url, data) {
-            await fetch(url, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-        }
-
-        async function deleteData(url) {
-            if (!confirm('¿Estás seguro de que quieres eliminar esto?')) return;
-            await fetch(url, { method: 'DELETE' });
         }
 
         // --- Modal & Action Handlers ---
@@ -625,13 +597,15 @@
         };
 
         window.deleteUser = async (id) => {
-            await deleteData(`/users/${id}`);
+            if (!confirm('¿Estás seguro de que quieres eliminar este usuario?')) return;
+            await DataService.deleteUser(id);
             loadUsers();
             loadUserOptions();
         };
 
         window.deleteTask = async (id) => {
-            await deleteData(`/tasks/${id}`);
+            if (!confirm('¿Estás seguro de que quieres eliminar esta tarea?')) return;
+            await DataService.deleteTask(id);
             loadTasks();
         };
 
