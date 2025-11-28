@@ -612,4 +612,645 @@
     </script>
 </body>
 
+=======
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - Premium Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --text-main: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            padding: 2rem;
+        }
+
+        /* Navbar / Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 1rem 2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .home-btn {
+            text-decoration: none;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .home-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Main Grid */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--glass-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h2::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* Forms */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        input,
+        select {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        button.btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        button.btn-primary:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Lists */
+        .list-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .list-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .list-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .list-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .list-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .list-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .item-info h3 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .item-info p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Action Buttons */
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-main);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-icon.delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: #1e293b;
+            border: 1px solid var(--border);
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.8rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .checkbox-group input {
+            width: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">TaskFlow Proyeto Test Java by: Cristian Garcia</div>
+        <a href="../index.html" class="home-btn">← Volver al Home</a>
+    </header>
+
+    <div class="dashboard">
+        <!-- Create User -->
+        <div class="card">
+            <h2>Nuevo Usuario</h2>
+            <form id="userForm">
+                <input type="text" id="username" placeholder="Nombre de usuario" required>
+                <input type="email" id="email" placeholder="Correo electrónico" required>
+                <button type="submit" class="btn-primary">Crear Usuario</button>
+            </form>
+        </div>
+
+        <!-- Create Task -->
+        <div class="card">
+            <h2>Nueva Tarea</h2>
+            <form id="taskForm">
+                <input type="text" id="title" placeholder="Título de la tarea" required>
+                <input type="text" id="description" placeholder="Descripción breve" required>
+                <select id="userSelect" required>
+                    <option value="">Asignar a usuario...</option>
+                </select>
+                <button type="submit" class="btn-primary">Crear Tarea</button>
+            </form>
+        </div>
+
+        <!-- Users List -->
+        <div class="card">
+            <h2>Usuarios Registrados</h2>
+            <div class="list-container" id="userList">
+                <div class="empty-state">Cargando usuarios...</div>
+            </div>
+        </div>
+
+        <!-- Tasks List -->
+        <div class="card">
+            <h2>Lista de Tareas</h2>
+            <div class="list-container" id="taskList">
+                <div class="empty-state">Cargando tareas...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal-overlay" id="editUserModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Editar Usuario</h2>
+                <button class="close-modal" onclick="closeModal('editUserModal')">×</button>
+            </div>
+            <form id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <input type="text" id="editUsername" placeholder="Nombre de usuario" required>
+                <input type="email" id="editEmail" placeholder="Correo electrónico" required>
+                <button type="submit" class="btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Task Modal -->
+    <div class="modal-overlay" id="editTaskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Editar Tarea</h2>
+                <button class="close-modal" onclick="closeModal('editTaskModal')">×</button>
+            </div>
+            <form id="editTaskForm">
+                <input type="hidden" id="editTaskId">
+                <input type="text" id="editTaskTitle" placeholder="Título" required>
+                <input type="text" id="editTaskDescription" placeholder="Descripción" required>
+                <select id="editTaskUser" required>
+                    <option value="">Asignar a usuario...</option>
+                </select>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="editTaskCompleted">
+                    <label for="editTaskCompleted">Marcar como completada</label>
+                </div>
+                <button type="submit" class="btn-primary">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = ''; // Relative path
+
+        // --- Logic ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUsers();
+            loadTasks();
+            loadUserOptions();
+        });
+
+        // --- Create Actions ---
+
+        document.getElementById('userForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await handleFormSubmit(e, '/users', 'POST', () => {
+                loadUsers();
+                loadUserOptions();
+            });
+        });
+
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const task = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                completed: false,
+                user: { id: parseInt(document.getElementById('userSelect').value) }
+            };
+            await postData('/tasks', task);
+            e.target.reset();
+            loadTasks();
+        });
+
+        // --- Edit Actions (Submit) ---
+
+        document.getElementById('editUserForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editUserId').value;
+            const user = {
+                username: document.getElementById('editUsername').value,
+                email: document.getElementById('editEmail').value
+            };
+            await putData(`/users/${id}`, user);
+            closeModal('editUserModal');
+            loadUsers();
+            loadUserOptions();
+        });
+
+        document.getElementById('editTaskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editTaskId').value;
+            const task = {
+                title: document.getElementById('editTaskTitle').value,
+                description: document.getElementById('editTaskDescription').value,
+                completed: document.getElementById('editTaskCompleted').checked,
+                user: { id: parseInt(document.getElementById('editTaskUser').value) }
+            };
+            await putData(`/tasks/${id}`, task);
+            closeModal('editTaskModal');
+            loadTasks();
+        });
+
+        // --- Loaders ---
+
+        async function loadUsers() {
+            const list = document.getElementById('userList');
+            try {
+                const data = await fetchData('/users');
+                if (data.length === 0) {
+                    list.innerHTML = '<div class="empty-state">No hay usuarios registrados</div>';
+                    return;
+                }
+                list.innerHTML = data.map(user => `
+                <div class="list-item">
+                    <div class="item-info">
+                        <h3>${user.username}</h3>
+                        <p>${user.email}</p>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-icon" onclick="openEditUser(${user.id}, '${user.username}', '${user.email}')" title="Editar">✎</button>
+                        <button class="btn-icon delete" onclick="deleteUser(${user.id})" title="Eliminar">🗑</button>
+                    </div>
+                </div>
+            `).join('');
+            } catch (err) {
+                list.innerHTML = '<div class="empty-state" style="color:#ef4444">Error al cargar usuarios</div>';
+            }
+        }
+
+        async function loadTasks() {
+            const list = document.getElementById('taskList');
+            try {
+                const data = await fetchData('/tasks');
+                if (data.length === 0) {
+                    list.innerHTML = '<div class="empty-state">No hay tareas pendientes</div>';
+                    return;
+                }
+                list.innerHTML = data.map(task => `
+                <div class="list-item">
+                    <div class="item-info">
+                        <h3>${task.title}</h3>
+                        <p>${task.description}</p>
+                        <p style="font-size:0.75rem; margin-top:0.3rem; opacity:0.7">
+                            Asignado a: ${task.user ? `${task.user.username} (${task.user.email})` : 'Desconocido'}
+                        </p>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:1rem">
+                        <div class="status-badge ${task.completed ? '' : 'pending'}">
+                            ${task.completed ? 'Completada' : 'Pendiente'}
+                        </div>
+                        <div class="actions">
+                            <button class="btn-icon" onclick='openEditTask(${JSON.stringify(task)})' title="Editar">✎</button>
+                            <button class="btn-icon delete" onclick="deleteTask(${task.id})" title="Eliminar">🗑</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            } catch (err) {
+                list.innerHTML = '<div class="empty-state" style="color:#ef4444">Error al cargar tareas</div>';
+            }
+        }
+
+        async function loadUserOptions() {
+            const selects = [document.getElementById('userSelect'), document.getElementById('editTaskUser')];
+            try {
+                const data = await fetchData('/users');
+                selects.forEach(select => {
+                    const currentVal = select.value;
+                    select.innerHTML = '<option value="">Asignar a usuario...</option>';
+                    data.forEach(user => {
+                        const option = document.createElement('option');
+                        option.value = user.id;
+                        option.textContent = `${user.username} (${user.email})`;
+                        select.appendChild(option);
+                    });
+                    if (currentVal) select.value = currentVal;
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        // --- Helpers ---
+
+        async function handleFormSubmit(e, url, method, onSuccess) {
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.textContent = 'Guardando...';
+            btn.disabled = true;
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                e.target.reset();
+                if (onSuccess) onSuccess();
+            } catch (err) {
+                alert('Error en la operación');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function fetchData(url) {
+            const res = await fetch(url);
+            return await res.json();
+        }
+
+        async function postData(url, data) {
+            await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        }
+
+        async function putData(url, data) {
+            await fetch(url, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        }
+
+        async function deleteData(url) {
+            if (!confirm('¿Estás seguro de que quieres eliminar esto?')) return;
+            await fetch(url, { method: 'DELETE' });
+        }
+
+        // --- Modal & Action Handlers ---
+
+        window.openEditUser = (id, username, email) => {
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editUsername').value = username;
+            document.getElementById('editEmail').value = email;
+            document.getElementById('editUserModal').classList.add('active');
+        };
+
+        window.openEditTask = (task) => {
+            document.getElementById('editTaskId').value = task.id;
+            document.getElementById('editTaskTitle').value = task.title;
+            document.getElementById('editTaskDescription').value = task.description;
+            document.getElementById('editTaskCompleted').checked = task.completed;
+            if (task.user) document.getElementById('editTaskUser').value = task.user.id;
+            document.getElementById('editTaskModal').classList.add('active');
+        };
+
+        window.closeModal = (id) => {
+            document.getElementById(id).classList.remove('active');
+        };
+
+        window.deleteUser = async (id) => {
+            await deleteData(`/users/${id}`);
+            loadUsers();
+            loadUserOptions();
+        };
+
+        window.deleteTask = async (id) => {
+            await deleteData(`/tasks/${id}`);
+            loadTasks();
+        };
+
+    </script>
+</body>
+
 </html>
